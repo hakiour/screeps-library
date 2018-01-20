@@ -1,4 +1,4 @@
-//Take the resource from an energy source
+//Take the resource from the nearest source
 module.exports.loop = function () {
     var creep = Game.creeps['Harvester1'];
     var sources = creep.room.find(FIND_SOURCES);
