@@ -24,10 +24,12 @@ var roleHarvester = {
                 if(creep.transfer(targets[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
                 }
+            }else{
+                creep.moveTo(Game.spawns['boss'], {visualizePathStyle: {stroke: '#ffffff'}});
             }
         }
         else {
-            var nearSource = creep.pos.findClosestByRange(creep.room.find(FIND_SOURCES_ACTIVE));
+            var nearSource = creep.pos.findClosestByPath(creep.room.find(FIND_SOURCES_ACTIVE));
             if(creep.harvest(nearSource) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(nearSource, {visualizePathStyle: {stroke: '#ffaa00'}});
             }
