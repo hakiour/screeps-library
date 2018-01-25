@@ -1,7 +1,27 @@
+var roleUpgrader = require('role.upgrader');
 var roleBuilder = {
 
     /** @param {Creep} creep **/
     run: function(creep) {
+
+        function pickUpNearSource(creep){
+            var minimumEnergy = 70;
+            var nearSource = creep.pos.findClosestByPath(FIND_DROPPED_RESOURCES,{
+                filter: (energy) => {return (energy.amount > minimumEnergy && energy.resourceType == RESOURCE_ENERGY)}
+            });
+            if(nearSource != undefined){
+                if(creep.pickup(nearSource) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(nearSource, {visualizePathStyle: {stroke: '#ffaa00'}});
+                }
+            }else{
+                nearSource = creep.pos.findClosestByPath(FIND_STRUCTURES,{
+                filter: (structure) => {return (structure.structureType == STRUCTURE_CONTAINER && structure.store[RESOURCE_ENERGY] > minimumEnergy)}
+                });
+                if(creep.withdraw(nearSource, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(nearSource, {visualizePathStyle: {stroke: '#ffffff'}});
+                }
+            }    
+        }
 
         if(creep.memory.building && creep.carry.energy == 0) {
             creep.memory.building = false;
@@ -13,18 +33,17 @@ var roleBuilder = {
         }
 
         if(creep.memory.building) {
-            var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
-            if(targets.length) {
-                if(creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
+            var nearConstruction = creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
+            if(nearConstruction != undefined){
+                if(creep.build(nearConstruction) == ERR_NOT_IN_RANGE){
+                creep.moveTo(nearConstruction, {visualizePathStyle: {stroke: '#ffffff'}});  
                 }
+            }else{
+                roleUpgrader.run(creep);
             }
         }
         else {
-            var nearSource = creep.pos.findClosestByPath(creep.room.find(FIND_SOURCES_ACTIVE));
-            if(creep.harvest(nearSource) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(nearSource, {visualizePathStyle: {stroke: '#ffaa00'}});
-            }
+            pickUpNearSource(creep);
         }
     }
 };
