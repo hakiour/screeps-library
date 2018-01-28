@@ -7,7 +7,7 @@ var roleHarvester = {
 
         function pickUpNearSource(creep){ 
         //Find the near droped energy, if there is no dropped energy, loock for the near container
-            var minimumEnergy = (creep.carryCapacity - creep.energy);
+            var minimumEnergy = (creep.carryCapacity - creep.carry[RESOURCE_ENERGY]);
             var nearSource = creep.pos.findClosestByPath(FIND_DROPPED_RESOURCES,{
                 filter: (energy) => {return (energy.amount > minimumEnergy && energy.resourceType == RESOURCE_ENERGY && creep.pos.getRangeTo(energy) < 10)}
             });
