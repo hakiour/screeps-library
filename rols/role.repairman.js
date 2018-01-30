@@ -1,5 +1,6 @@
 var genericFunctions = require('genericFunctions');
-var roleBuilder = require('role.builder');
+var roleUpgrader = require('role.upgrader');
+var maxStructureHitsWalls = 1000000;
 var roleRepairman = {
 
     /** @param {Creep} creep **/
@@ -23,15 +24,16 @@ var roleRepairman = {
         }
 
         if(creep.memory.reparing) {     
-            var maxStructureHitsWalls = 550000;
+
             var nearStructure;
             if(creep.memory.reparingThis){
                 nearStructure = Game.getObjectById(creep.memory.reparingThis);
             }else{
-                nearStructure = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+                nearStructure = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                 filter: (structure) => (((structure.hits < structure.hitsMax/2) && structure.structureType != STRUCTURE_WALL && structure.structureType != STRUCTURE_RAMPART) || (structure.hits < maxStructureHitsWalls && (structure.hits + 1000) < structure.hitsMax))
                 // && (structure.structureType == STRUCTURE_RAMPART || structure.structureType == STRUCTURE_WALL)
                 });
+                
                 if(nearStructure){
                          creep.memory.reparingThis = nearStructure.id;
                 }
@@ -45,16 +47,20 @@ var roleRepairman = {
                     creep.memory.reparingThis = false;
                 }
         	}else{
-        		var thisFlag = genericFunctions.findThisFlag("EnergyFlag_003");
+                roleUpgrader.run(creep);
+        		/*var thisFlag = genericFunctions.findThisFlag("EnergyFlag_003");
                 if(creep.room != Game.flags[thisFlag].room){
                     creep.moveTo(Game.flags[thisFlag]);
                 }else{
                     goToBase(creep);
-                }
+                }*/
         	}
         }
         else {
-            goToBase(creep);
+            if(creep.withdraw(creep.room.storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(creep.room.storage, {visualizePathStyle: {stroke: '#ffffff'}});
+            }
+            //goToBase(creep);
         }
     }
 };

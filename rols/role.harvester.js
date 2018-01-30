@@ -6,6 +6,7 @@ var roleHarvester = {
     run: function(creep) {
 
         function pickUpNearSource(creep){ 
+
         //Find the near droped energy, if there is no dropped energy, loock for the near container
             var minimumEnergy = (creep.carryCapacity - creep.carry[RESOURCE_ENERGY]);
             var nearSource = creep.pos.findClosestByPath(FIND_DROPPED_RESOURCES,{
@@ -35,7 +36,7 @@ var roleHarvester = {
                         if(creep.withdraw(creep.room.storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                         creep.moveTo(creep.room.storage, {visualizePathStyle: {stroke: '#ffffff'}});
                     }else{//If there is not structure to fill, and no source energy where get energy, get to the nearest safe zone
-                         creep.moveTo(genericFunctions.getNearestSafeZone);
+                        creep.moveTo(genericFunctions.getNearestSafeZone);
                     }
                 }
                 }
@@ -63,7 +64,7 @@ var roleHarvester = {
                 }
             }else{//If spawner(boss) is full, but we not, let's pick up some energy
                 if(creep.carry.energy < creep.carryCapacity){
-                    pickUpNearSource(creep);
+                    genericFunctions.pickUpNearSource(creep);
                 }else{
                     if(creep.transfer(creep.room.storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                         creep.moveTo(creep.room.storage);

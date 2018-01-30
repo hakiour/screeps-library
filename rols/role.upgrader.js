@@ -16,7 +16,12 @@ var roleUpgrader = {
             }
         }
         else {
-            genericFunctions.pickUpNearSource(creep,70);
+           	nearSource = creep.pos.findClosestByPath(FIND_STRUCTURES,{
+            filter: (structure) => {return (structure.structureType == STRUCTURE_CONTAINER && structure.store[RESOURCE_ENERGY] > 70)}
+            });
+            if(creep.withdraw(nearSource, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(nearSource, {visualizePathStyle: {stroke: '#ffffff'}});
+            }
         }
     }
 };

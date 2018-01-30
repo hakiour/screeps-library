@@ -4,10 +4,9 @@ var roleTransporter = {
    
     /** @param {Creep} creep **/
     run: function(creep) {
-		if(creep.memory.onFlag == false || creep.memory.onFlag == undefined){
+		if(!creep.memory.onFlag){
 
-            for(var thisFlag in Game.flags) {       
-
+            for(var thisFlag in Game.flags) {
                 var name = Game.flags[thisFlag].name;   
                 var maxTransporters = 3;
                 if (Game.flags[thisFlag].room && Game.flags[thisFlag].room.controller && Game.flags[thisFlag].room.controller.my ){
@@ -20,7 +19,7 @@ var roleTransporter = {
                     break;
                 }
             }
-            if(creep.memory.onFlag == false || creep.memory.onFlag == undefined){
+            if(!creep.memory.onFlag){
                 roleHarvester.run(creep);
             }
         }else{

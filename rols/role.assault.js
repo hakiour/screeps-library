@@ -34,12 +34,13 @@ var roleMiner = {
         }
 
         function attackNearEnemy(){
-        	creep.say("Muere puta");
+        	
         	//const target = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);//Cambiar por la sala en la q estamos
         	const target = creep.room.find(FIND_HOSTILE_CREEPS);
-			if(target) {
-			    if(creep.attack(target) == ERR_NOT_IN_RANGE) {
-			        creep.moveTo(target);
+        	console.log(target);
+			if(target.length > 0) {
+			    if(creep.attack(target[0]) == ERR_NOT_IN_RANGE) {
+			        creep.moveTo(target[0]);
 			    }
 			}else{
 				creep.memory.onTheObjective = false;
