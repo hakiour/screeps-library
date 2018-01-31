@@ -6,7 +6,6 @@ var roleHarvester = {
     run: function(creep) {
 
         function pickUpNearSource(creep){ 
-
         //Find the near droped energy, if there is no dropped energy, loock for the near container
             var minimumEnergy = (creep.carryCapacity - creep.carry[RESOURCE_ENERGY]);
             var nearSource = creep.pos.findClosestByPath(FIND_DROPPED_RESOURCES,{
@@ -29,19 +28,20 @@ var roleHarvester = {
                         filter: (structure) => {
                             return (structure.structureType == STRUCTURE_EXTENSION ||
                                 structure.structureType == STRUCTURE_SPAWN ||
-                                structure.structureType == STRUCTURE_TOWER) && structure.energy < structure.energyCapacity;
+                                structure.structureType == STRUCTURE_TOWER) && structure.energy < (structure.energyCapacity - structure.energyCapacity/3);
                         }
                     });
-                    if(targets.length > 0) {//If we find some structure, get energy from storage
+                    if(targets.length > 0) {
                         if(creep.withdraw(creep.room.storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                         creep.moveTo(creep.room.storage, {visualizePathStyle: {stroke: '#ffffff'}});
-                    }else{//If there is not structure to fill, and no source energy where get energy, get to the nearest safe zone
-                        creep.moveTo(genericFunctions.getNearestSafeZone);
+                        }
                     }
-                }
-                }
-            }   
-        }
+                    else{//If there is not structure to fill, and no source energy where get energy, get to the nearest safe zone
+                        creep.moveTo(genericFunctions.getNearestSafeZone);
+                    } 
+            }
+        }   
+    }
 
         if(creep.memory.upgrading && creep.carry.energy == 0) {
             creep.memory.upgrading = false;
@@ -55,7 +55,7 @@ var roleHarvester = {
                 filter: (structure) => {
                     return (structure.structureType == STRUCTURE_EXTENSION ||
                         structure.structureType == STRUCTURE_SPAWN ||
-                        structure.structureType == STRUCTURE_TOWER) && structure.energy < structure.energyCapacity;
+                        structure.structureType == STRUCTURE_TOWER) && structure.energy < (structure.energyCapacity - structure.energyCapacity/3);
                 }
             });
             if(targets.length > 0) {

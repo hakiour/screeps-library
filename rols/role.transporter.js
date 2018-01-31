@@ -4,7 +4,7 @@ var roleTransporter = {
    
     /** @param {Creep} creep **/
     run: function(creep) {
-		if(!creep.memory.onFlag){
+		if(!creep.memory.onFlag && creep.ticksToLive > 5){
 
             for(var thisFlag in Game.flags) {
                 var name = Game.flags[thisFlag].name;   
@@ -20,17 +20,18 @@ var roleTransporter = {
                 }
             }
             if(!creep.memory.onFlag){
+                console.log(Game.time + "I'm unassigned" + creep.name);
                 roleHarvester.run(creep);
             }
         }else{
-            if(creep.ticksToLive < 5){
+            if(creep.ticksToLive <= 5){
                 Game.flags[creep.memory.onFlag].memory.transporters--;
                 creep.suicide();
             } else if(creep.carry.energy < creep.carryCapacity){
                 if(creep.pos.getRangeTo(Game.flags[creep.memory.onFlag]) <= 2){
                     genericFunctions.pickUpNearSource(creep, 10);
                 }else{
-                 creep.moveTo(Game.flags[creep.memory.onFlag]);
+                    creep.moveTo(Game.flags[creep.memory.onFlag]);
                 }
             }else{
                 if(creep.transfer(Game.rooms["W42N47"].storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {

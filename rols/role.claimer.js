@@ -6,7 +6,7 @@ var roleClaimer = {
 
 		function moveToObjective(){
 			if(!creep.memory.onTheObjective){
-				if(!creep.memory.onFlag || creep.memory.onFlag == undefined){
+				if(!creep.memory.onFlag || creep.memory.onFlag == undefined && creep.ticksToLive > 10){
 				 	for(var thisFlag in Game.flags) {       
 				        var name = Game.flags[thisFlag].name;
 				        if (name.startsWith("ClaimFlag") && (Game.flags[thisFlag].memory.bussy == false || Game.flags[thisFlag].memory.bussy == undefined)){

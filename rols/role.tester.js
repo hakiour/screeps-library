@@ -4,8 +4,8 @@ var roleTester = {
    
     /** @param {Creep} creep **/
     run: function(creep) {
-    	creep.say("TESTER");
-    	if (creep.carryCapacity > creep.energy){
+    	
+    	if (creep.carryCapacity > creep.carry.energy){
     		genericFunctions.pickUpNearSource(creep);	
     	}else{
     		var thisFlag = genericFunctions.findThisFlag("EnergyFlag_006");

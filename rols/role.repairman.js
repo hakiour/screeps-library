@@ -1,6 +1,6 @@
 var genericFunctions = require('genericFunctions');
 var roleUpgrader = require('role.upgrader');
-var maxStructureHitsWalls = 1000000;
+var maxStructureHitsWalls = 1150000;
 var roleRepairman = {
 
     /** @param {Creep} creep **/

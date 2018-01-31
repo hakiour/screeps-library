@@ -9,14 +9,14 @@ module.exports = {
             });*/
         if(nearSource != undefined){
             if(creep.pickup(nearSource) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(nearSource, {visualizePathStyle: {stroke: '#ffaa00'}});
+                creep.moveTo(nearSource);
             }
         }else{
             nearSource = creep.pos.findClosestByPath(FIND_STRUCTURES,{
             filter: (structure) => {return (structure.structureType == STRUCTURE_CONTAINER && structure.store[RESOURCE_ENERGY] > minimumEnergy)}
             });
             if(creep.withdraw(nearSource, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(nearSource, {visualizePathStyle: {stroke: '#ffffff'}});
+                    creep.moveTo(nearSource);
             }
         }     
 	},
@@ -71,7 +71,7 @@ module.exports = {
     goToBase: function(creep){
             var nearestSafeZone = getNearestSafeZone(creep);
             if(creep.room != Game.flags[nearestSafeZone].room){
-                creep.moveTo(Game.flags[nearestSafeZone], {visualizePathStyle: {stroke: '#ffaa00'}});
+                creep.moveTo(Game.flags[nearestSafeZone]);
                 console.log(creep.name + " moving to a safezone: " + nearestSafeZone);
             }else{
                  pickUpNearSource(creep);    

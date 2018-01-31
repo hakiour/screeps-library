@@ -18,76 +18,74 @@ module.exports.loop = function () {
 
     for(let spawnerName in Game.spawns){
     	let spawner = Game.spawns[spawnerName];
-    	let creepsOnTheRoom = spawner.room.find(FIND_CREEPS);
+    	let countByRole = _.countBy(spawner.room.find(FIND_MY_CREEPS), 'memory.role');
+		let globalCountByRole = _.countBy(Game.creeps, 'memory.role');
     	//Basics rols, every room has his owns
-	    var harvesters = _.filter(creepsOnTheRoom, (creep) => creep.memory.role == 'harvester');
-	    var builders = _.filter(creepsOnTheRoom, (creep) => creep.memory.role == 'builder');
-	    var upgraders = _.filter(creepsOnTheRoom, (creep) => creep.memory.role == 'upgrader');
-	    var farmers = _.filter(creepsOnTheRoom, (creep) => creep.memory.role == 'farmer');
-	    var repairman = _.filter(creepsOnTheRoom, (creep) => creep.memory.role == 'repairman');
+	    var harvesters = countByRole['harvester'] || 0;
+	    var builders = countByRole['builder'] || 0;
+	    var upgraders = countByRole['upgrader'] || 0;
+	    var farmers = countByRole['farmer'] || 0;
+	    var repairman = countByRole['repairman'] || 0;
 	    //Generic rols, all rooms share this units
-	    var miners = _.filter(Game.creeps, (creep) => creep.memory.role == 'miner');
-	    var assault = _.filter(Game.creeps, (creep) => creep.memory.role == 'unit_assault');
-	    var healers = _.filter(Game.creeps, (creep) => creep.memory.role == 'unit_healer');
-	    var claimers = _.filter(Game.creeps, (creep) => creep.memory.role == 'claimer');
-	    var transporters = _.filter(Game.creeps, (creep) => creep.memory.role == 'transporter');
-	    var testers = _.filter(Game.creeps, (creep) => creep.memory.role == 'tester');
+	    var miners = globalCountByRole['miner'] || 0;
+	    var assault = globalCountByRole['assault'] || 0;
+	    var healers = globalCountByRole['healer'] || 0;
+	    var claimers = globalCountByRole['claimer'] || 0;
+	    var transporters = globalCountByRole['transporter'] || 0;
+	    var testers = globalCountByRole['tester'] || 0;
+
 	    //If the total of creeps is less than the minimum, spawn a new creep with the suitable rol&parts
-	    if(assault.length < spawner.memory.minUnitAssault){
+	    if(assault < spawner.memory.minUnitAssault){
 	        var newName = 'Unit-Assault-' + Game.time;
 	        spawner.spawnCreep([TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,MOVE], newName, 
 	            {memory: {role: 'unit_assault', onFlag: false}});
-	    }else if(healers.length < spawner.memory.minUnitHealer ){
+	    }else if(healers < spawner.memory.minUnitHealer ){
 	        var newName = 'Unit-Healer-' + Game.time;
 	        spawner.spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,HEAL,HEAL,HEAL,HEAL,HEAL], newName, 
 	            {memory: {role: 'unit_healer'}});
-	    }else if(testers.length < spawner.memory.minTesters){
-	        var newName = 'Tester-' + Game.time;
-	        spawner.spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,WORK,WORK,CARRY,CARRY,CARRY], newName, 
-	            {memory: {role: 'tester'}});
-	    }else if(harvesters.length < 1) { //If whe don't have harvesters, spawn one with the minimn of parts
-	        var newName = 'Harvester-' + Game.time;
-	        spawner.spawnCreep([CARRY,MOVE], newName, 
-	            {memory: {role: 'harvester'}});
-	    }else if(harvesters.length < spawner.memory.minHarvesters) {
+	    }else if(harvesters < spawner.memory.minHarvesters) {
 	        var newName = 'Harvester-' + Game.time;
 	        spawner.spawnCreep([CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE], newName, 
 	            {memory: {role: 'harvester'}});
-	    }else if(farmers.length < spawner.memory.minFarmers) {
+	    }else if(farmers < spawner.memory.minFarmers) {
 	        var newName = 'Farmer-' + Game.time;
 	        spawner.spawnCreep([WORK,WORK,WORK,WORK,WORK,MOVE], newName, 
 	            {memory: {role: 'farmer'}});
-	    }else if(upgraders.length < spawner.memory.minUpgraders) {
+	    }else if(upgraders < spawner.memory.minUpgraders) {
 	        var newName = 'Upgrader-' + Game.time;
 	        spawner.spawnCreep([WORK,WORK,WORK,WORK,WORK,WORK,WORK,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE], newName, 
 	            {memory: {role: 'upgrader', upgrading: false}});
-	    }else if(repairman.length < spawner.memory.minRepairman) {
+	    }else if(repairman < spawner.memory.minRepairman) {
 	        var newName = 'Repairman-' + Game.time;
 	        spawner.spawnCreep([WORK,WORK,WORK,WORK,WORK,WORK,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE], newName, 
 	            {memory: {role: 'repairman', reparing: false}});
-	    }else if(claimers.length < spawner.memory.minClaimer ){
+	    }else if(claimers < spawner.memory.minClaimer ){
 	        var newName = 'Claimer-' + Game.time;
 	        spawner.spawnCreep([MOVE,CLAIM], newName, 
 	            {memory: {role: 'claimer'}});
-	    }else if(builders.length < spawner.memory.minBuilders) {
+	    }else if(builders < spawner.memory.minBuilders) {
 	        var newName = 'Builder-' + Game.time;
 	        spawner.spawnCreep([WORK,WORK,WORK,WORK,CARRY,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE], newName, 
 	            {memory: {role: 'builder', building: false}});
-	    }else if(miners.length < spawner.memory.minMiners){
+	    }else if(miners < spawner.memory.minMiners){
 	        var newName = 'Miner-' + Game.time;
-	        spawner.spawnCreep([WORK,WORK,WORK,WORK,WORK,WORK,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE], newName, 
+	        spawner.spawnCreep([WORK,WORK,WORK,WORK,WORK,WORK,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE], newName, 
 	            {memory: {role: 'miner', onFlag: false}});
-	    }else if(transporters.length < spawner.memory.minTransporters){
+	    }else if(transporters < spawner.memory.minTransporters){
 	        var newName = 'Transporter-' + Game.time;
 	        spawner.spawnCreep([WORK,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE], newName, 
 	            {memory: {role: 'transporter', onFlag: false}});
+	    }else if(testers < spawner.memory.minTesters){
+	        var newName = 'Tester-' + Game.time;
+	        spawner.spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,WORK,WORK,CARRY,CARRY,CARRY], newName, 
+	            {memory: {role: 'tester'}});
 	    }
 	    
 	    console.log("-------------------------");
 	  	console.log("SPAWNER: " + spawnerName);
-	    console.log('Harvesters: ' + harvesters.length + ' Builders: ' + builders.length + ' Upgraders: ' + upgraders.length  + ' Farmers: ' + farmers.length + ' Repairman: ' + repairman.length + ' Miners: ' + miners.length+ ' Transporter: ' + transporters.length + ' Claimers: ' + claimers.length);
-	    console.log('ARMY -- ASSAULT: ' + assault.length + ' HEALERS: ' + healers.length);
-	    console.log('TESTER: ' + testers.length);
+	    console.log('Harvesters: ' + harvesters + ' Builders: ' + builders + ' Upgraders: ' + upgraders  + ' Farmers: ' + farmers + ' Repairman: ' + repairman + ' Miners: ' + miners+ ' Transporter: ' + transporters + ' Claimers: ' + claimers);
+	    console.log('ARMY -- ASSAULT: ' + assault + ' HEALERS: ' + healers);
+	    console.log('TESTER: ' + testers);
 	    console.log("-------------------------");
 
 	    //Draw a message with the crep role
@@ -99,8 +97,34 @@ module.exports.loop = function () {
 	            spawner.pos.y, 
 	            {align: 'left', opacity: 0.8});
 	    }  
-	}
 
+
+
+	}
+    //find all towers
+    var towers = _.filter(Game.structures, Tower => Tower.structureType == STRUCTURE_TOWER);
+    //for each tower
+    for (let tower of towers) {
+        // find closes hostile creep
+        var target = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);	
+        if (target) {//If we found it, kill it
+            tower.attack(target);
+        }else{
+        	//Repair near structures
+        	/*if (tower.energy > 600){
+        		target = tower.pos.findClosestByRange(FIND_STRUCTURES, {
+            filter: (structure) => (((structure.hits < structure.hitsMax/2) && structure.structureType != STRUCTURE_WALL && structure.structureType != STRUCTURE_RAMPART) || (structure.hits < 10000 && (structure.hits + 1000) < structure.hitsMax))
+            // && (structure.structureType == STRUCTURE_RAMPART || structure.structureType == STRUCTURE_WALL)
+            });
+            
+            if(target){
+            	console.log(tower.repair(target));
+            }
+        	}*/
+        }
+    }
+
+    //Find all creeps and call for theyr methods
 	for(var name in Game.creeps) {
         var creep = Game.creeps[name];
         switch(creep.memory.role) {
@@ -139,11 +163,4 @@ module.exports.loop = function () {
                 break;
 	        }
 	    }
-    // find all towers
-    var towers = _.filter(Game.structures, s => s.structureType == STRUCTURE_TOWER);
-    // for each tower
-    for (let tower of towers) {
-        // run tower logic
-        tower.defend();
-    }
 }
