@@ -39,7 +39,7 @@ module.exports = {
         for(var thisFlag in Game.flags) {       
             var name = Game.flags[thisFlag].name;
             if (name.startsWith("SafeZone")){
-                return name;
+                return thisFlag;
             }
         }
     },

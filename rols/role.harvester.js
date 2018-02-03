@@ -36,9 +36,6 @@ var roleHarvester = {
                         creep.moveTo(creep.room.storage, {visualizePathStyle: {stroke: '#ffffff'}});
                         }
                     }
-                    else{//If there is not structure to fill, and no source energy where get energy, get to the nearest safe zone
-                        creep.moveTo(genericFunctions.getNearestSafeZone);
-                    } 
             }
         }   
     }

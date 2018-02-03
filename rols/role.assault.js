@@ -37,14 +37,27 @@ var roleMiner = {
         	
         	//const target = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);//Cambiar por la sala en la q estamos
         	const target = creep.room.find(FIND_HOSTILE_CREEPS);
-        	console.log(target);
 			if(target.length > 0) {
 			    if(creep.attack(target[0]) == ERR_NOT_IN_RANGE) {
 			        creep.moveTo(target[0]);
 			    }
 			}else{
-				creep.memory.onTheObjective = false;
-				findNearEnemy();
+				const target = creep.room.find(FIND_HOSTILE_SPAWNS);
+				if(target.length > 0) {
+				    if(creep.attack(target[0]) == ERR_NOT_IN_RANGE) {
+				        creep.moveTo(target[0]);
+				    }
+				}else{
+					const target = creep.room.find(FIND_HOSTILE_STRUCTURES);
+					if(target.length > 0) {
+					    if(creep.attack(target[0]) == ERR_NOT_IN_RANGE) {
+					        creep.moveTo(target[0]);
+					    }
+					}else{
+						creep.memory.onTheObjective = false;
+						findNearEnemy();
+					}
+				}	
 			}
         }
 

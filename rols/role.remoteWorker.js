@@ -1,6 +1,6 @@
 var genericFunctions = require('genericFunctions');
-var roleUpgrader = require('role.upgrader');
-var roleTester = {
+var roleBuilder = require('role.builder');
+var roleRemoteWorker = {
    
     /** @param {Creep} creep **/
     run: function(creep) {
@@ -17,7 +17,7 @@ var roleTester = {
             if(creep.room != Game.flags[thisFlag].room){
                 creep.moveTo(Game.flags[thisFlag]);
             }else{
-                roleUpgrader.run(creep);
+                roleBuilder.run(creep);
             }
     	}else{
             genericFunctions.pickUpNearSource(creep);   	
@@ -25,4 +25,4 @@ var roleTester = {
     }
 };
 
-module.exports = roleTester;
+module.exports = roleRemoteWorker;

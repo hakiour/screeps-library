@@ -4,7 +4,7 @@ var roleTransporter = {
    
     /** @param {Creep} creep **/
     run: function(creep) {
-		if(!creep.memory.onFlag && creep.ticksToLive > 5){
+		if((!creep.memory.onFlag ||creep.memory.onFlag == undefined) && creep.ticksToLive > 5){
 
             for(var thisFlag in Game.flags) {
                 var name = Game.flags[thisFlag].name;   
@@ -26,6 +26,7 @@ var roleTransporter = {
         }else{
             if(creep.ticksToLive <= 5){
                 Game.flags[creep.memory.onFlag].memory.transporters--;
+                creep.memory.onFlag = true;
                 creep.suicide();
             } else if(creep.carry.energy < creep.carryCapacity){
                 if(creep.pos.getRangeTo(Game.flags[creep.memory.onFlag]) <= 2){

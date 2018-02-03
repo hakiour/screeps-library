@@ -1,4 +1,5 @@
 var genericFunctions = require('genericFunctions');
+var masterSpawner = require('masterSpawner');
 var roleHarvester = require('role.harvester');
 var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
@@ -10,6 +11,7 @@ var roleHealer = require('role.healer');
 var roleClaimer = require('role.claimer');
 var roleTransporter = require('role.transporter');
 var roleTester = require('role.tester');
+var roleRemoteWorker = require('role.remoteWorker');
 require('prototype.tower');
 
 module.exports.loop = function () {
@@ -20,6 +22,46 @@ module.exports.loop = function () {
     	let spawner = Game.spawns[spawnerName];
     	let countByRole = _.countBy(spawner.room.find(FIND_MY_CREEPS), 'memory.role');
 		let globalCountByRole = _.countBy(Game.creeps, 'memory.role');
+		masterSpawner.createNewCreep(spawner, "harvester");
+		// TO DO
+		/*
+
+		 `_.groupBy(Game.creeps, c => c.pos.roomName + '_' + c.memory.role)` and then check for groups like:
+		`let miners = creepsByRole['E59S39_Miner']` or something. Let's once pass group by room and role.
+
+		let creepsByRole = _.groupBy(Game.creeps, 'memory.role');
+		let miners = creepsByRole['miner'] || [];
+
+		Actually it's a lot lighter because that way you process each structure once, while with a bunch of filters each creep goes over all structures several times until they find a match
+
+		It's also more efficient in general because with the "basic" system, all creeps are basically "racing" each other. They all try to go to the spawn, then they all try to fill the tower, etc, so there will be a lot of wasted pathfinding.
+		If there are three creeps bringing energy somewhere while you need only one, two creeps have wasted cpu on pathfinding and wasted time (and thus life) on going somewhere they didn't need to go.
+
+		With Tigga's system you can send your creeps to different targets
+
+
+		hakiour [12:47 AM]
+		all se the point, for do this, i need to save all on memory, no?
+
+		Because it's the only way i know for store the list of structures
+
+		because if i save it on a variable
+
+		when the creeps attentd to acces to it they need to read the variable
+
+		I know i explain myself like shit hahaha, sry
+
+		My english sucks
+
+
+		Keenathar [12:49 AM]
+		I guess the easiest implementation would be to store the target in creep memory, and to store the job (creep X is bringing Y energy to target Z) in memory.
+		Each tick when going over room.structures you can ignore the ones that are already being handled.
+
+		For jobs you can just create a new memory location such as Memory.logisticJobs or something.
+
+		I think that should be enough to start trying yourself :wink:
+		*/
     	//Basics rols, every room has his owns
 	    var harvesters = countByRole['harvester'] || 0;
 	    var builders = countByRole['builder'] || 0;
@@ -28,11 +70,12 @@ module.exports.loop = function () {
 	    var repairman = countByRole['repairman'] || 0;
 	    //Generic rols, all rooms share this units
 	    var miners = globalCountByRole['miner'] || 0;
-	    var assault = globalCountByRole['assault'] || 0;
-	    var healers = globalCountByRole['healer'] || 0;
+	    var assault = globalCountByRole['unit_assault'] || 0;
+	    var healers = globalCountByRole['unit_healer'] || 0;
 	    var claimers = globalCountByRole['claimer'] || 0;
 	    var transporters = globalCountByRole['transporter'] || 0;
 	    var testers = globalCountByRole['tester'] || 0;
+	    var remoteWorkers = globalCountByRole['remoteWorker'] || 0;
 
 	    //If the total of creeps is less than the minimum, spawn a new creep with the suitable rol&parts
 	    if(assault < spawner.memory.minUnitAssault){
@@ -67,18 +110,22 @@ module.exports.loop = function () {
 	        var newName = 'Builder-' + Game.time;
 	        spawner.spawnCreep([WORK,WORK,WORK,WORK,CARRY,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE], newName, 
 	            {memory: {role: 'builder', building: false}});
+	    }else if(testers < spawner.memory.minTesters){
+	        var newName = 'Tester-' + Game.time;
+	        spawner.spawnCreep([MOVE,MOVE,MOVE,MOVE,WORK,WORK,CARRY,CARRY,CARRY], newName, 
+	            {memory: {role: 'tester'}});
+	    }else if(remoteWorkers < spawner.memory.minRemoteWorkers){
+	        var newName = 'RemoteWorker-' + Game.time;
+	        spawner.spawnCreep([MOVE,MOVE,MOVE,MOVE,WORK,WORK,CARRY,CARRY,CARRY], newName, 
+	            {memory: {role: 'remoteWorker'}});
 	    }else if(miners < spawner.memory.minMiners){
 	        var newName = 'Miner-' + Game.time;
-	        spawner.spawnCreep([WORK,WORK,WORK,WORK,WORK,WORK,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE], newName, 
+	        spawner.spawnCreep([WORK,WORK,WORK,WORK,WORK,WORK,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE], newName, 
 	            {memory: {role: 'miner', onFlag: false}});
 	    }else if(transporters < spawner.memory.minTransporters){
 	        var newName = 'Transporter-' + Game.time;
 	        spawner.spawnCreep([WORK,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE], newName, 
 	            {memory: {role: 'transporter', onFlag: false}});
-	    }else if(testers < spawner.memory.minTesters){
-	        var newName = 'Tester-' + Game.time;
-	        spawner.spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,WORK,WORK,CARRY,CARRY,CARRY], newName, 
-	            {memory: {role: 'tester'}});
 	    }
 	    
 	    console.log("-------------------------");
@@ -110,6 +157,15 @@ module.exports.loop = function () {
         if (target) {//If we found it, kill it
             tower.attack(target);
         }else{
+        	//Heal near creeps
+        	target = tower.pos.findClosestByRange(FIND_MY_CREEPS, {
+            filter: (thisCreep) => (thisCreep.hits < thisCreep.hitsMax)
+            // && (structure.structureType == STRUCTURE_RAMPART || structure.structureType == STRUCTURE_WALL)
+            });
+            
+            if(target){
+            	console.log(tower.heal(target));
+            }
         	//Repair near structures
         	/*if (tower.energy > 600){
         		target = tower.pos.findClosestByRange(FIND_STRUCTURES, {
@@ -161,6 +217,9 @@ module.exports.loop = function () {
             case 'tester':
                 roleTester.run(creep);
                 break;
+            case 'remoteWorker':
+            roleRemoteWorker.run(creep);
+            	break;
 	        }
 	    }
 }
