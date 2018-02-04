@@ -5,14 +5,14 @@ var roleBuilder = {
     /** @param {Creep} creep **/
     run: function(creep) {
 
-        if(creep.memory.building && creep.carry.energy == 0) {
-            creep.memory.building = false;
+        if(creep.memory.working && creep.carry.energy == 0) {
+            creep.memory.working = false;
         }
-        if(!creep.memory.building && creep.carry.energy == creep.carryCapacity) {
-            creep.memory.building = true;
+        if(!creep.memory.working && creep.carry.energy == creep.carryCapacity) {
+            creep.memory.working = true;
         }
 
-        /*if(creep.memory.building) {
+        /*if(creep.memory.working) {
             var nearConstruction = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
             if(nearConstruction != undefined){
                 if(creep.build(nearConstruction) == ERR_NOT_IN_RANGE){
@@ -43,7 +43,7 @@ var roleBuilder = {
             }
         }*/
 
-        if(creep.memory.building) {     
+        if(creep.memory.working) {     
             var nearConstruction;
             if(creep.memory.buildingThis){
                 nearConstruction = Game.getObjectById(creep.memory.buildingThis);

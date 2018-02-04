@@ -1,6 +1,6 @@
 var genericFunctions = require('genericFunctions');
 var roleUpgrader = require('role.upgrader');
-var maxStructureHitsWalls = 1150000;
+var maxStructureHitsWalls = 1500000;
 var roleRepairman = {
 
     /** @param {Creep} creep **/
@@ -16,14 +16,14 @@ var roleRepairman = {
             }
         }
 
-        if(creep.memory.reparing && creep.carry.energy == 0) {
-            creep.memory.reparing = false;
+        if(creep.memory.working && creep.carry.energy == 0) {
+            creep.memory.working = false;
         }
-        if(!creep.memory.reparing && creep.carry.energy == creep.carryCapacity) {
-            creep.memory.reparing = true;
+        if(!creep.memory.working && creep.carry.energy == creep.carryCapacity) {
+            creep.memory.working = true;
         }
 
-        if(creep.memory.reparing) {     
+        if(creep.memory.working) {     
 
             var nearStructure;
             if(creep.memory.reparingThis){
@@ -35,7 +35,7 @@ var roleRepairman = {
                 });
                 
                 if(nearStructure){
-                         creep.memory.reparingThis = nearStructure.id;
+                    creep.memory.reparingThis = nearStructure.id;
                 }
             }
 	        
@@ -57,9 +57,15 @@ var roleRepairman = {
         	}
         }
         else {
-            if(creep.withdraw(creep.room.storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+            var nearSource = creep.room.storage;
+            if (nearSource){
+                if(creep.withdraw(creep.room.storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(creep.room.storage, {visualizePathStyle: {stroke: '#ffffff'}});
+                }
+            }else{
+                genericFunctions.pickUpNearSource(creep);
             }
+            
             //goToBase(creep);
         }
     }

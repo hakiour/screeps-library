@@ -9,7 +9,7 @@ var roleHarvester = {
         //Find the near droped energy, if there is no dropped energy, loock for the near container
             var minimumEnergy = (creep.carryCapacity - creep.carry[RESOURCE_ENERGY]);
             var nearSource = creep.pos.findClosestByPath(FIND_DROPPED_RESOURCES,{
-                filter: (energy) => {return (energy.amount > minimumEnergy && energy.resourceType == RESOURCE_ENERGY && creep.pos.getRangeTo(energy) < 10)}
+                filter: (energy) => {return (energy.amount > minimumEnergy && energy.resourceType == RESOURCE_ENERGY)}
             });
             if(nearSource != undefined){
                 if(creep.pickup(nearSource) == ERR_NOT_IN_RANGE) {
@@ -28,31 +28,34 @@ var roleHarvester = {
                         filter: (structure) => {
                             return (structure.structureType == STRUCTURE_EXTENSION ||
                                 structure.structureType == STRUCTURE_SPAWN ||
-                                structure.structureType == STRUCTURE_TOWER) && structure.energy < (structure.energyCapacity - structure.energyCapacity/3);
+                                structure.structureType == STRUCTURE_TOWER) && structure.energy < structure.energyCapacity;
                         }
                     });
                     if(targets.length > 0) {
                         if(creep.withdraw(creep.room.storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                         creep.moveTo(creep.room.storage, {visualizePathStyle: {stroke: '#ffffff'}});
                         }
+
+                    }else{
+
                     }
             }
         }   
     }
 
-        if(creep.memory.upgrading && creep.carry.energy == 0) {
-            creep.memory.upgrading = false;
+        if(creep.memory.working && creep.carry.energy == 0) {
+            creep.memory.working = false;
         }
-        if(!creep.memory.upgrading && creep.carry.energy == creep.carryCapacity) {
-            creep.memory.upgrading = true;
+        if(!creep.memory.working && creep.carry.energy == creep.carryCapacity) {
+            creep.memory.working = true;
         }
 
-        if(creep.memory.upgrading) {//Fill the main energy structures
+        if(creep.memory.working) {//Fill the main energy structures
             var targets = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return (structure.structureType == STRUCTURE_EXTENSION ||
                         structure.structureType == STRUCTURE_SPAWN ||
-                        structure.structureType == STRUCTURE_TOWER) && structure.energy < (structure.energyCapacity - structure.energyCapacity/3);
+                        structure.structureType == STRUCTURE_TOWER) && structure.energy < structure.energyCapacity;
                 }
             });
             if(targets.length > 0) {

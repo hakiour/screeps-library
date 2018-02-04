@@ -20,7 +20,7 @@ var roleTransporter = {
                 }
             }
             if(!creep.memory.onFlag){
-                console.log(Game.time + "I'm unassigned" + creep.name);
+                console.log(Game.time + "I'm unassigned " + creep.name);
                 roleHarvester.run(creep);
             }
         }else{
