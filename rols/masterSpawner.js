@@ -1,7 +1,7 @@
 module.exports = {
 	createNewCreep: function(spawner, role) {
-		let parts = [];
-		let _this = this;
+		const parts = [];
+		let minimumParts = 2; //The minimum parts that one creep can be created with	
 
 		//Get the energy avaiable from near extensions that have energy
 		let energyAvaiable = spawner.room.find(FIND_STRUCTURES, {
@@ -9,13 +9,13 @@ module.exports = {
 		}).length * 50;
 
 		//add the energy of Spawner and substract the backup part (200 energy)
-		energyAvaiable += spawner.energy - 200;
+		energyAvaiable += spawner.energy - 100;
 		console.log(spawner.name + " has " + energyAvaiable + " energy on his room");
 		if (energyAvaiable <= 0)	{
 			return;
 		}
 
-		let numberOfParts = [
+		const numberOfParts = [
 		/*[NamePart,PercentDedicated(Ex: 50 means 50% of energyAvaiable spended on this part),TotalParts,EnergyCostForEachPart]*/
 		    [TOUGH,0,0,10],
 		    [WORK,0,0,100],
@@ -29,6 +29,7 @@ module.exports = {
 		switch(role) {
             case 'harvester':
             	energyAvaiable = this.setEnergyLimit(700,energyAvaiable);
+            	minimumParts = 4;
  				//We set up the % of energy that we want to spend on each part
             	numberOfParts[4][1] = 50; //MOVE
 				numberOfParts[2][1] = 50; //CARRY
@@ -47,6 +48,7 @@ module.exports = {
                 break;
             case 'farmer':
             	energyAvaiable = this.setEnergyLimit(500,energyAvaiable);
+            	minimumParts = 6;
             	numberOfParts[1][1] = 100; //WORK
  				numberOfParts[4][1] = 0.1; //MOVE
                 break;
@@ -97,8 +99,9 @@ module.exports = {
   				numberOfParts[4][1] = 36; //MOVE
             	break;
 	    }
-		//We calculate how much parts we need by rule of three (rounding to floor with ~~)
-		for (var i = numberOfParts.length - 1; i >= 0; i--) {
+
+		//We calculate how much parts we can do by rule of three (rounding to floor with ~~)
+		for (let i = numberOfParts.length - 1; i >= 0; i--) {
 			if(numberOfParts[i][1] == 0){ //Delete the parts that don't have %
 				numberOfParts.splice(i,1);
 				continue;
@@ -110,10 +113,14 @@ module.exports = {
 		}
 		//Add the parts to the body: EX: [WORK,WORK] + [CARRY,CARRY] = [WORK,WORK,CARRY,CARRY]
 		numberOfParts.forEach(function(dataParts) {
-			for (var i = dataParts[2]; i > 0; i--) {
+			for (let i = dataParts[2]; i > 0; i--) {
 				parts.push(dataParts[0]);
 			}
 		});
+		if (minimumParts > parts.length){
+			console.log("INSUFFICIENT ENERGY FOR CREATE A " + role + ", MINIMUM PARTS CAN'T BE DONE");
+			return;
+			}
 		console.log("SPAWNING: " + role + " with: " + parts + " parts.");
 		console.log("Spawner result error code: " + spawner.spawnCreep(parts, role + "-" + Game.time, {
 			memory: {
@@ -123,14 +130,7 @@ module.exports = {
 				roomRoot: spawner.room.name
 			}
 		}));
-	},
-	makeStringParts: function(numberOfParts, nameOfPart){
-		//Make the string for the creation string: EX "WORK,WORK,WORK"
-		var result = [];
-			for (var i = numberOfParts; i > 0; i--) {
-				result.push(nameOfPart);
-			}
-		return result;
+		
 	},
 	setEnergyLimit: function(energyLimit,energyAvaiable){
 		//If we have more energy than the limit, set the energy avaiable as the limit.
