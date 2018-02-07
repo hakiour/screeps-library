@@ -60,6 +60,7 @@ module.exports = {
                 break;
             case 'miner':
             	energyAvaiable = this.setEnergyLimit(1000,energyAvaiable);
+            	minimumParts = 6;
  				numberOfParts[1][1] = 60; //WORK
  				numberOfParts[4][1] = 40; //MOVE
                 break;
@@ -82,9 +83,9 @@ module.exports = {
                 break;
             case 'unit_healer':
              	energyAvaiable = this.setEnergyLimit(1700,energyAvaiable);
- 				numberOfParts[0][1] = 3; //TOUGH
- 				numberOfParts[4][1] = 21; //MOVE
-  				numberOfParts[6][1] = 76; //HEAL
+ 				numberOfParts[0][1] = 2; //TOUGH
+ 				numberOfParts[4][1] = 41; //MOVE
+  				numberOfParts[6][1] = 56; //HEAL
                 break;
             case 'tester':
                 energyAvaiable = this.setEnergyLimit(650,energyAvaiable);

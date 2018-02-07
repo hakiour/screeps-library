@@ -1,19 +1,13 @@
 var genericFunctions = require('genericFunctions');
 var roleUpgrader = require('role.upgrader');
-var maxStructureHitsWalls = 1500000;
 var roleRepairman = {
 
     /** @param {Creep} creep **/
     run: function(creep) {
-
-        function goToBase(creep){
-            var nearestSafeZone = genericFunctions.getNearestSafeZone(creep);
-            if(creep.room != Game.flags[nearestSafeZone].room){
-                creep.moveTo(Game.flags[nearestSafeZone], {visualizePathStyle: {stroke: '#ffaa00'}});
-                console.log(creep.name + " moving to a safezone: " + nearestSafeZone);
-            }else{
-                 genericFunctions.pickUpNearSource(creep);    
-            }
+        let  maxStructureHitsWalls = 100000;
+        //If the room has his own top repair (for example, new rooms can't afford 1.500.000 hp on walls)
+        if(creep.room.memory.maxStructureHits){
+            maxStructureHitsWalls = creep.room.memory.maxStructureHits;
         }
 
         if(creep.memory.working && creep.carry.energy == 0) {
@@ -31,9 +25,7 @@ var roleRepairman = {
             }else{
                 nearStructure = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                 filter: (structure) => (((structure.hits < structure.hitsMax/2) && structure.structureType != STRUCTURE_WALL && structure.structureType != STRUCTURE_RAMPART) || (structure.hits < maxStructureHitsWalls && (structure.hits + 1000) < structure.hitsMax))
-                // && (structure.structureType == STRUCTURE_RAMPART || structure.structureType == STRUCTURE_WALL)
-                });
-                
+                });         
                 if(nearStructure){
                     creep.memory.reparingThis = nearStructure.id;
                 }
@@ -48,12 +40,6 @@ var roleRepairman = {
                 }
         	}else{
                 roleUpgrader.run(creep);
-        		/*var thisFlag = genericFunctions.findThisFlag("EnergyFlag_003");
-                if(creep.room != Game.flags[thisFlag].room){
-                    creep.moveTo(Game.flags[thisFlag]);
-                }else{
-                    goToBase(creep);
-                }*/
         	}
         }
         else {
@@ -65,8 +51,6 @@ var roleRepairman = {
             }else{
                 genericFunctions.pickUpNearSource(creep);
             }
-            
-            //goToBase(creep);
         }
     }
 };

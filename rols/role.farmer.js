@@ -6,7 +6,7 @@ var roleFarmer = {
         var assignetToCreep = false;
         var idSource = "";
         if(!creep.memory.sourceId || creep.memory.sourceId == undefined ){
-            //Find sources that aren't assigned to other farmers
+            //Find sources that aren't assigned to other farmers and assigne it to the actual farmer
                 for(var source of creep.room.find(FIND_SOURCES)){
                     assignetToCreep = false;
                     for(var thisCreep of creep.room.find(FIND_MY_CREEPS,{
@@ -25,6 +25,7 @@ var roleFarmer = {
                         break;
                     }
                 }               
+        //TO DO
         //If we dosen't found some free source, get the minerals             
         }else{
             var sources = Game.getObjectById(creep.memory.sourceId);

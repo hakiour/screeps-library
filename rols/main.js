@@ -169,7 +169,8 @@ module.exports.loop = function () {
                 roleBuilder.run(creep);
                 break;
             case 'farmer':
-                genericFunctions.harvestNearSource(creep);
+                //genericFunctions.harvestNearSource(creep);
+                roleFarmer.run(creep);
                 break;
             case 'repairman':
                 roleRepairman.run(creep);
@@ -193,7 +194,7 @@ module.exports.loop = function () {
                 roleTester.run(creep);
                 break;
             case 'remoteWorker':
-            roleRemoteWorker.run(creep);
+            	roleRemoteWorker.run(creep);
             	break;
 	        }
 	    }

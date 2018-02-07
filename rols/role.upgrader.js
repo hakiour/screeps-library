@@ -10,9 +10,13 @@ var roleUpgrader = {
             creep.memory.working = true;
         }
 
-        if(creep.memory.working) {       
-            if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(creep.room.controller, {visualizePathStyle: {stroke: '#ffffff'}});
+        if(creep.memory.working) {  
+            if (creep.room.name == creep.memory.roomRoot){
+                if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(creep.room.controller, {visualizePathStyle: {stroke: '#ffffff'}});
+                }
+            }else{
+                creep.moveTo(creep.pos.findClosestByRange(creep.room.findExitTo(Game.rooms[creep.memory.roomRoot])));
             }
         }
         else {

@@ -32,8 +32,8 @@ module.exports = {
             if(targets.length > 0) {
                 if(creep.withdraw(creep.room.storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(creep.room.storage);
-                } 
-            }  
+                }
+            }
     },
     getNearestSafeZone: function(creep){
         for(var thisFlag in Game.flags) {       
